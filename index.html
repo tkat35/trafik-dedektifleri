@@ -624,22 +624,35 @@ function nextPraise() {
   return lastPraise;
 }
 
+/* Şık sırası her vakada karışık: yan yana oturan öğrenciler harfle cevap aktaramasın.
+   order[konum] = soru bankasındaki seçenek numarası */
+let order = [0, 1, 2];
+function shuffledOrder() {
+  const a = [0, 1, 2];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function openCase() {
   const c = CASES[index];
   answered = false;
+  order = shuffledOrder();
   $("case-title").textContent = `Vaka ${index + 1}`;
   $("case-place").textContent = c.place;
   $("scene").innerHTML = SCENES[c.scene]();
   $("question").textContent = c.q;
   const list = $("options");
   list.innerHTML = "";
-  c.o.forEach((text, i) => {
+  order.forEach((orig, i) => {
     const li = document.createElement("li");
     const b = document.createElement("button");
     b.className = "opt";
     b.type = "button";
     b.innerHTML = `<span class="letter">${LETTERS[i]}</span><span></span>`;
-    b.lastChild.textContent = text;
+    b.lastChild.textContent = c.o[orig];
     b.addEventListener("click", () => choose(i));
     li.appendChild(b);
     list.appendChild(li);
@@ -655,16 +668,17 @@ function choose(i) {
   if (answered) return;
   answered = true;
   const c = CASES[index];
-  const ok = i === c.a;
+  const correctPos = order.indexOf(c.a); // doğru seçeneğin ekrandaki yeri
+  const ok = i === correctPos;
   results.push(ok);
   if (ok) stars += 2;
   [...$("options").querySelectorAll(".opt")].forEach((b, k) => {
     b.disabled = true;
-    if (k === c.a) b.classList.add("correct");
+    if (k === correctPos) b.classList.add("correct");
     else if (k === i) b.classList.add("wrong");
     else b.classList.add("dim");
   });
-  $("fb-title").textContent = ok ? `${nextPraise()} +2 yıldız` : `Doğru cevap: ${LETTERS[c.a]}`;
+  $("fb-title").textContent = ok ? `${nextPraise()} +2 yıldız` : `Doğru cevap: ${LETTERS[correctPos]}`;
   $("fb-text").textContent = "Çünkü " + c.why.charAt(0).toLocaleLowerCase("tr") + c.why.slice(1);
   $("feedback").className = "feedback show " + (ok ? "good" : "bad");
   $("btn-next").classList.add("show");
