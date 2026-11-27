@@ -36,6 +36,8 @@
     -webkit-tap-highlight-color: transparent;
   }
   button { font: inherit; color: inherit; cursor: pointer; }
+  /* Tablet: çift dokunuşta yakınlaşma ve uzun basışta metin seçimi olmasın */
+  button, .stop { touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   :focus-visible { outline: 4px solid var(--amber); outline-offset: 3px; }
 
   .screen { min-height: 100vh; display: none; }
@@ -91,6 +93,11 @@
   #detective { transition: transform .8s ease-in-out; }
   .place-label { font-weight: 800; font-size: 17px; fill: var(--ink); }
   .map-hint { text-align: center; color: var(--ink-soft); margin: 0 0 12px; font-size: 18px; }
+  .map-hint.call { color: var(--ink); font-weight: 800; font-size: 22px; }
+  .stop .hit { fill: transparent; pointer-events: none; }
+  .stop.waiting { cursor: pointer; }
+  .stop.waiting .hit { pointer-events: all; }
+  .stop.waiting:focus { outline: none; }
 
   /* ---------- Vaka penceresi ---------- */
   .overlay {
@@ -117,7 +124,7 @@
     border: 3px solid #C3CEDA; background: #F6F9FB; border-radius: 14px;
     padding: 12px 14px; font-size: 21px; min-height: 64px;
   }
-  .opt:hover:not(:disabled) { border-color: var(--sign-blue); }
+  @media (hover: hover) { .opt:hover:not(:disabled) { border-color: var(--sign-blue); } }
   .opt .letter {
     flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%;
     background: var(--sign-blue); color: var(--white); font-weight: 800;
@@ -159,6 +166,22 @@
     .question { font-size: 21px; }
     .opt { font-size: 19px; }
     .topbar .title span { display: none; }
+  }
+  /* Kısa ekranlı tablet (yatay ya da küçük dikey): vaka penceresi kaydırmasız sığsın */
+  @media (max-height: 900px) {
+    .scene { height: min(15vh, 140px); margin-top: 8px; }
+    .case-head { padding-top: 10px; }
+    .question { padding: 10px 22px 2px; font-size: 22px; }
+    .options { gap: 8px; padding-top: 6px; }
+    .opt { min-height: 56px; padding: 8px 14px; font-size: 20px; }
+    .feedback { padding: 10px 16px; margin-top: 6px; }
+    .feedback strong { font-size: 21px; margin-bottom: 2px; }
+    .feedback p { font-size: 20px; }
+    .case-foot { padding: 10px 22px 14px; }
+  }
+  @media (max-height: 720px) {
+    .scene { height: 12vh; }
+    .opt { min-height: 52px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -408,6 +431,7 @@ function drawMap() {
   let stops = "";
   STOPS.forEach(([x,y], i) => {
     stops += `<g class="stop todo" id="stop-${i}">
+      <circle class="hit" cx="${x}" cy="${y}" r="40"/>
       <circle class="ring" cx="${x}" cy="${y}" r="24" fill="none"/>
       <circle class="dot" cx="${x}" cy="${y}" r="20"/>
       <text x="${x}" y="${y+7}" text-anchor="middle">${i+1}</text>
@@ -572,6 +596,34 @@ const SCENES = {
 /* ===================== VAKA AKIŞI ===================== */
 const LETTERS = ["A","B","C"];
 
+/* Doğru cevapta değişen tebrik (geleneksel grupta hakem aynı listeden söyler; ders-plani_geleneksel-oyun.md) */
+const PRAISES = [
+  "Harika, dedektif!",
+  "Süper gözlem!",
+  "Tam isabet!",
+  "Bravo, iz sürmeyi biliyorsun!",
+  "Çok iyi düşündün!",
+  "Aferin, vaka çözüldü!",
+  "Tam bir dedektif gibi düşündün!",
+  "Mükemmel seçim!",
+  "Gözünden hiçbir şey kaçmıyor!",
+  "İşte bu, dedektif!"
+];
+let praiseBag = [], lastPraise = "";
+function nextPraise() {
+  if (praiseBag.length === 0) {
+    praiseBag = PRAISES.slice();
+    for (let i = praiseBag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [praiseBag[i], praiseBag[j]] = [praiseBag[j], praiseBag[i]];
+    }
+    // yeni tur, bir öncekinin son tebriğiyle başlamasın
+    if (praiseBag[praiseBag.length - 1] === lastPraise) [praiseBag[0], praiseBag[praiseBag.length - 1]] = [praiseBag[praiseBag.length - 1], praiseBag[0]];
+  }
+  lastPraise = praiseBag.pop();
+  return lastPraise;
+}
+
 function openCase() {
   const c = CASES[index];
   answered = false;
@@ -612,7 +664,7 @@ function choose(i) {
     else if (k === i) b.classList.add("wrong");
     else b.classList.add("dim");
   });
-  $("fb-title").textContent = ok ? "Doğru! +2 yıldız" : `Doğru cevap: ${LETTERS[c.a]}`;
+  $("fb-title").textContent = ok ? `${nextPraise()} +2 yıldız` : `Doğru cevap: ${LETTERS[c.a]}`;
   $("fb-text").textContent = "Çünkü " + c.why.charAt(0).toLocaleLowerCase("tr") + c.why.slice(1);
   $("feedback").className = "feedback show " + (ok ? "good" : "bad");
   $("btn-next").classList.add("show");
@@ -629,6 +681,7 @@ function nextCase() {
 }
 
 function goToStop() {
+  $("map-hint").className = "map-hint";
   $("map-hint").textContent = "Dedektif bir sonraki durağa gidiyor…";
   moveDetective(index);
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -660,8 +713,34 @@ function startGame() {
   $("detective").style.transform = `translate(${x - 60}px,${y}px)`;
   requestAnimationFrame(() => requestAnimationFrame(() => {
     $("detective").style.transition = "";
-    goToStop();
   }));
+  waitForFirstStop();
+}
+
+/* İlk vaka kendiliğinden açılmaz: öğrenci haritayı görür, hazır olunca 1. durağa dokunur */
+function waitForFirstStop() {
+  const g = $("stop-0");
+  g.classList.add("waiting");
+  g.setAttribute("tabindex", "0");
+  g.setAttribute("role", "button");
+  g.setAttribute("aria-label", "1. durak: ilk vakayı başlat");
+  $("map-hint").className = "map-hint call";
+  $("map-hint").textContent = "Haritayı incele. Hazır olunca yanıp sönen 1 numaralı durağa dokun.";
+  const begin = () => {
+    g.classList.remove("waiting");
+    g.removeAttribute("tabindex");
+    g.removeAttribute("role");
+    g.removeAttribute("aria-label");
+    g.removeEventListener("click", begin);
+    g.removeEventListener("keydown", onKey);
+    goToStop();
+  };
+  const onKey = (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); begin(); }
+  };
+  g.addEventListener("click", begin);
+  g.addEventListener("keydown", onKey);
+  g.focus();
 }
 
 /* Klavye: A/B/C ya da 1/2/3 ile seçim */
