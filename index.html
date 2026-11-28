@@ -275,7 +275,7 @@ const CASES = [
     why: "Alt geçit yayaları araçlardan ayırır; birkaç adım fazla yürümek bizi güvende tutar." },
   { place: "Kavşak", scene: "pedBlink", q: "Yaya ışığı yeşil yanıp sönmeye başladı, sen henüz kaldırımdasın. Ne yaparsın?",
     o: ["Koşarak yetişirim.", "Yolun yarısına kadar gidip dururum.", "Kaldırımda kalır, bir sonraki yeşili beklerim."], a: 2,
-    why: "Yanıp sönen yeşil, ışığın birazdan kırmızı olacağını söyler; yolun ortasında kalabiliriz." },
+    why: "Yanıp sönen yeşil, ışığın birazdan kırmızı olacağını söyler; geçmeye başlarsak yolun ortasında kırmızıya yakalanabiliriz." },
   { place: "Yaya geçidi", scene: "phoneCross", q: "Karşıya geçerken telefonuna mesaj geldi. Ne zaman bakarsın?",
     o: ["Karşıya geçip güvenli bir yerde durunca bakarım.", "Hemen, yürürken bakarım.", "Yolun ortasında durup bakarım."], a: 0,
     why: "Telefona bakarken yolu ve araçları göremeyiz." },
@@ -292,7 +292,7 @@ const CASES = [
     o: ["Zil çalıp geçerim.", "Yayanın arkasından dolaşırım.", "Durup yayanın geçmesini beklerim."], a: 2,
     why: "Yaya geçidinde öncelik yayanındır; bisiklet sürücüsü de bu kurala uyar." },
   { place: "Sakin sokak", scene: "lookLeft", q: "Yaya geçidi olmayan bir yerde karşıya geçerken neden en son tekrar sola bakarız?",
-    o: ["Alışkanlık olduğu için.", "Bize en yakın şeritteki araçlar soldan geldiği için.", "Sağdan hiç araç gelmediği için."], a: 1,
+    o: ["Alışkanlık olduğu için.", "Yolun bize yakın tarafındaki araçlar soldan geldiği için.", "Sağdan hiç araç gelmediği için."], a: 1,
     why: "Bakarken soldan yeni bir araç gelmiş olabilir; ilk karşılaşacağımız araçlar soldan gelir." },
   { place: "Okul yolu", scene: "chaos", q: "Trafik kuralları hiç olmasaydı okul yolunda ne olurdu?",
     o: ["Kazalar artar, insanlar yaralanabilirdi.", "Herkes daha hızlı ulaşırdı.", "Hiçbir şey değişmezdi."], a: 0,
@@ -305,7 +305,7 @@ const CASES = [
     why: "Duran servis, yoldan gelen araçları görmemizi engeller; geçit güvenli geçiş yeridir." },
   { place: "Büyük cadde", scene: "carRed", q: "Araçlar için ışık kırmızı yandı. Sürücü ne yapmalı?",
     o: ["Durmalı ve yeşili beklemeli.", "Yavaşlayıp geçmeli.", "Korna çalıp geçmeli."], a: 0,
-    why: "Kırmızı ışık herkese “dur” der; sürücü durunca yayalar güvenle geçer." },
+    why: "Kırmızı ışık sürücüye “dur” der; sürücü durunca yayalar güvenle geçer." },
   { place: "Park kenarı", scene: "bikeSign", q: "“Mecburi bisiklet yolu” levhası olan yerde bisikletli nerede gitmeli?",
     o: ["Kaldırımda.", "Yolun ortasında.", "Bisiklet yolunda."], a: 2,
     why: "Levha, bisikletin güvenle gideceği yeri gösterir; yayalar ve araçlarla karşılaşma azalır." },
@@ -326,10 +326,10 @@ const CASES = [
     why: "Yavaş giden araç daha kısa sürede durur; çocukların güvenliği için hız sınırına uyulur." },
   { place: "Tatil dönüşü", scene: "safeArrive", q: "Bir aile kurallara uyarak yolculuk yaptı. Kurallara uymak onlara ne kazandırdı?",
     o: ["Daha geç kalmalarına neden oldu.", "Hiçbir şey kazandırmadı.", "Güvenle ve sağ salim varmalarını sağladı."], a: 2,
-    why: "Kurallara uymak can ve mal kaybını önler; güvenle ulaşmamızı sağlar." },
+    why: "Kurallara uymak yaralanmamızı ve eşyalarımızın zarar görmesini önler; güvenle ulaşmamızı sağlar." },
   { place: "Eve varış", scene: "rolemodel", q: "Sen kurallara uyunca küçük kardeşin ya da arkadaşların ne öğrenir?",
     o: ["Kuralların önemsiz olduğunu.", "Kurallara uymayı; böylece onlar da korunur.", "Hiçbir şey öğrenmez."], a: 1,
-    why: "Kurallar herkes için geçerlidir; örnek olarak kendimizi ve başkalarını koruruz." }
+    why: "Kurallar herkes için geçerlidir; biz uyunca bizi gören kardeşlerimiz ve arkadaşlarımız da uyar, böylece hepimiz korunuruz." }
 ];
 
 const SUMMARY = [
@@ -338,10 +338,10 @@ const SUMMARY = [
   "Trafik ışıklarına uyarız.",
   "Levhalara dikkat ederiz; levhalar kuralları ve tehlikeleri gösterir.",
   "Kaldırımda yürürüz; kaldırım yoksa yolun solundan, araçları karşımızdan görerek yürürüz.",
-  "Yolda telefonla meşgul olmayız, kulaklıkla müzik dinlemeyiz.",
+  "Yolda yürürken telefona bakmayız, kulaklıkla müzik dinlemeyiz.",
   "Arabada kemer takarız; çocuklar arka koltukta oturur.",
   "Sürücüler yayaya ve bisikletliye yol verir, kırmızıda durur, hız sınırına uyar.",
-  "Kurallara uymak can ve mal kaybını önler.",
+  "Kurallara uymak, yaralanmamızı ve eşyalarımızın zarar görmesini önler.",
   "Kurallar herkes içindir; uyunca kendimizi ve başkalarını koruruz."
 ];
 
@@ -625,21 +625,41 @@ function nextPraise() {
 }
 
 /* Şık sırası her vakada karışık: yan yana oturan öğrenciler harfle cevap aktaramasın.
+   Doğru cevabın harfi her oyunda yeniden planlanır: A, B, C dengeli (20 vakada 7/7/6)
+   ve aynı harf üst üste en çok 2 kez gelir.
    order[konum] = soru bankasındaki seçenek numarası */
 let order = [0, 1, 2];
-function shuffledOrder() {
-  const a = [0, 1, 2];
+let answerPlan = [];
+function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
+function planAnswerPositions(n) {
+  const base = Math.floor(n / 3), extra = shuffle([0, 1, 2]).slice(0, n % 3);
+  const pool = [];
+  [0, 1, 2].forEach(p => { for (let k = 0; k < base + (extra.includes(p) ? 1 : 0); k++) pool.push(p); });
+  for (;;) {
+    shuffle(pool);
+    let ok = true;
+    for (let i = 2; i < pool.length; i++) if (pool[i] === pool[i - 1] && pool[i] === pool[i - 2]) { ok = false; break; }
+    if (ok) return pool.slice();
+  }
+}
+function orderFor(correctOrig, pos) {
+  const others = shuffle([0, 1, 2].filter(x => x !== correctOrig));
+  const a = [];
+  a[pos] = correctOrig;
+  [0, 1, 2].filter(p => p !== pos).forEach((p, k) => { a[p] = others[k]; });
+  return a;
+}
 
 function openCase() {
   const c = CASES[index];
   answered = false;
-  order = shuffledOrder();
+  order = orderFor(c.a, answerPlan[index]);
   $("case-title").textContent = `Vaka ${index + 1}`;
   $("case-place").textContent = c.place;
   $("scene").innerHTML = SCENES[c.scene]();
@@ -718,6 +738,7 @@ function showEnd() {
 
 function startGame() {
   index = 0; stars = 0; results.length = 0;
+  answerPlan = planAnswerPositions(CASES.length);
   drawMap();
   show("map-screen");
   paintStops();
